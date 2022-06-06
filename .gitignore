@@ -27,6 +27,7 @@
 !.vscode/extensions.json
 *.code-workspace
 !.vscode/*.code-snippets
+*.log
 
 ### VisualStudioCode.patch ###
 # Ignore all local history of files
