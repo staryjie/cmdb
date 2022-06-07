@@ -27,4 +27,7 @@ const (
 	// -- 使用DISTINCT对字段去重
 	// -- 用于分页时使用
 	sqlCountResource = `SELECT COUNT(DISTINCT r.id) FROM resource r %s JOIN resource_tag t ON r.id = t.resource_id`
+
+	// 查询Tag标签
+	sqlQueryResourceTag = `SELECT t_key,t_value,description,resource_id,weight,type FROM resource_tag`
 )

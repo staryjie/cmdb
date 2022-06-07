@@ -199,6 +199,21 @@ func (s *service) Search(ctx context.Context, req *resource.SearchRequest) (
 		set.Add(ins)
 	}
 
+	// 补充资源的标签
+	// 为什么 不在上个SQL，直接把Tag查出来?
+	// 只能查询到我们匹配到的tag  app=app1 只有app=app1 这个标签
+	// 要把这个资源的所有标签都一并查出来
+	if req.WithTags {
+		tags, err := QueryTag(ctx, s.db, set.ResourceIds())
+		if err != nil {
+			return nil, err
+		}
+		// 查询出这个set关联的所有Tag(resource_id)
+		// 对应resource的Tag更新到Resource 结构体
+		// 更新的逻辑: tag.resource_id == resource.id --> 添加到resource Tags属性里面
+		set.UpdateTag(tags)
+	}
+
 	return set, nil
 }
 
