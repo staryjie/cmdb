@@ -62,3 +62,20 @@ CREATE TABLE IF NOT EXISTS `resource_tag` (
   KEY `idx_value` (`t_value`) USING BTREE,
   KEY `idx_resource_id` (`resource_id`) USING HASH
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COMMENT='资源标签';
+
+CREATE TABLE IF NOT EXISTS `resource_host` (
+  `resource_id` varchar(64)  NOT NULL COMMENT '关联的资源Id',
+  `cpu` tinyint(4) NOT NULL COMMENT 'cpu核数',
+  `memory` int(13) NOT NULL COMMENT '内存大小',
+  `gpu_amount` tinyint(4) DEFAULT NULL COMMENT 'gpu核数',
+  `gpu_spec` varchar(255)  DEFAULT NULL COMMENT 'gpu规格',
+  `os_type` varchar(255)  DEFAULT NULL COMMENT '操作系统类型',
+  `os_name` varchar(255) DEFAULT NULL COMMENT '操作系统名称',
+  `serial_number` varchar(120)  DEFAULT NULL COMMENT '系统序列号',
+  `image_id` char(64)  DEFAULT NULL COMMENT '镜像Id',
+  `internet_max_bandwidth_out` int(10) DEFAULT NULL COMMENT '外网最大出口带宽',
+  `internet_max_bandwidth_in` int(10) DEFAULT NULL COMMENT '外网最大入口带宽',
+  `key_pair_name` varchar(255)  DEFAULT NULL COMMENT 'ssh key关联Id',
+  `security_groups` varchar(255)  DEFAULT NULL COMMENT '安全组Id列表',
+  PRIMARY KEY (`resource_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='服务器主机信息';

@@ -30,4 +30,26 @@ const (
 
 	// 查询Tag标签
 	sqlQueryResourceTag = `SELECT t_key,t_value,description,resource_id,weight,type FROM resource_tag`
+
+	sqlDeleteResourceTag = `
+		DELETE
+		FROM
+			resource_tag
+		WHERE
+			resource_id =?
+			AND t_key =?
+			AND t_value =?;
+	`
+
+	sqlInsertOrUpdateResourceTag = `
+		INSERT INTO resource_tag ( type, t_key, t_value, description, resource_id, weight, create_at)
+		VALUES
+			( ?,?,?,?,?,?,? )
+			ON DUPLICATE KEY UPDATE description =
+		IF
+			( type != 1,?, description ),
+			weight =
+		IF
+			( type != 1,?, weight );
+	`
 )

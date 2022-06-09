@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	request "github.com/infraboard/mcube/http/request"
+	"github.com/staryjie/cmdb/utils"
 )
 
 const (
@@ -212,4 +213,16 @@ func ParExpr(str string) (*TagSelector, error) {
 	}
 
 	return selector, nil
+}
+
+func (i *Information) Hash() string {
+	return utils.Hash(i)
+}
+
+func (i *Information) PublicIPToString() string {
+	return strings.Join(i.PublicIp, ",")
+}
+
+func (i *Information) PrivateIPToString() string {
+	return strings.Join(i.PrivateIp, ",")
 }
