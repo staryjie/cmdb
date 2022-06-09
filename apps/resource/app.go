@@ -226,3 +226,12 @@ func (i *Information) PublicIPToString() string {
 func (i *Information) PrivateIPToString() string {
 	return strings.Join(i.PrivateIp, ",")
 }
+
+func NewThirdTag(key, value string) *Tag {
+	return &Tag{
+		Type:   TagType_THIRD,
+		Key:    key,
+		Value:  value,
+		Weight: 1,
+	}
+}
