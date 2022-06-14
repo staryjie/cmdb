@@ -3,6 +3,7 @@ package cvm
 import (
 	"context"
 
+	"github.com/infraboard/mcube/flowcontrol/tokenbucket"
 	"github.com/infraboard/mcube/logger"
 	"github.com/infraboard/mcube/logger/zap"
 	cvm "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cvm/v20170312"
@@ -17,15 +18,17 @@ type pagger struct {
 	pageSize   int64
 	pageNumber int64
 	log        logger.Logger
+	tb         *tokenbucket.Bucket
 }
 
-func NewPagger(op *CVMOperator) *pagger {
+func NewPagger(rate float64, op *CVMOperator) *pagger {
 	p := &pagger{
 		op:         op,
 		hasNext:    true,
 		pageNumber: 1,
 		pageSize:   20,
 		log:        zap.L().Named("CVM"),
+		tb:         tokenbucket.NewBucketWithRate(rate, 3),
 	}
 
 	p.req = cvm.NewDescribeInstancesRequest()
@@ -42,6 +45,8 @@ func (p *pagger) Next() bool {
 
 // 修改Req 执行真正的下一页的offset
 func (p *pagger) nextReq() *cvm.DescribeInstancesRequest {
+	// 等待分配令牌
+	p.tb.Wait(1)
 	// 修改req指向真正的下一页的offset
 	p.req.Offset = p.offset()
 	p.req.Limit = &p.pageSize
