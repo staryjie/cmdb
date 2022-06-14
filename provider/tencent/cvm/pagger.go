@@ -35,6 +35,7 @@ func NewPagger(op *CVMOperator) *pagger {
 	return p
 }
 
+// 需要在请求数据的时候动态计算（当前请求页的数据是否满页）
 func (p *pagger) Next() bool {
 	return p.hasNext
 }
@@ -43,7 +44,7 @@ func (p *pagger) Next() bool {
 func (p *pagger) nextReq() *cvm.DescribeInstancesRequest {
 	// 修改req指向真正的下一页的offset
 	p.req.Offset = p.offset()
-	// p.req.Limit = &p.pageSize
+	p.req.Limit = &p.pageSize
 
 	return p.req
 }
