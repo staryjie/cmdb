@@ -1,6 +1,7 @@
 package host
 
 import (
+	context "context"
 	"net/http"
 	"strings"
 	"time"
@@ -112,6 +113,10 @@ func (s *HostSet) Add(item any) {
 	return
 }
 
+func (s *HostSet) Length() int64 {
+	return int64(len(s.Items))
+}
+
 func (s *HostSet) ResourceIds() (ids []string) {
 	for i := range s.Items {
 		ids = append(ids, s.Items[i].Base.Id)
@@ -145,4 +150,16 @@ func NewQueryHostRequestFromHTTP(r *http.Request) *QueryHostRequest {
 		Page:     page,
 		Keywords: kw,
 	}
+}
+
+// 分页器接口
+// for p.Next() {
+// if err := p.Scan(set); err != nil {
+// panic(err)
+// }
+// }
+type Pagger interface {
+	Next() bool
+	SetPageSize(ps int64)
+	Scan(context.Context, *HostSet) error
 }
