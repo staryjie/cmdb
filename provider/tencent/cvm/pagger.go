@@ -67,6 +67,12 @@ func (p *pagger) Scan(ctx context.Context, set *host.HostSet) error {
 		return err
 	}
 
+	// 查询的数据赋值给set
+	*set = *hs.Clone()
+	// for i := range hs.Items {
+	// 	set.Add(set.Items[i])
+	// }
+
 	// 获取当前页没有数据，则没有下一页
 	// 还可以根据当前页数据是否小于pageSize，如果小于pageSize，则没有下一页
 	if hs.Length() < p.pageSize {

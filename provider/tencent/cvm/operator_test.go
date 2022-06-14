@@ -40,7 +40,7 @@ func TestPaggerQuery(t *testing.T) {
 		if err := p.Scan(context.Background(), set); err != nil {
 			panic(err)
 		}
-		t.Log(set)
+		t.Logf("Pagger Query Result: %v", set)
 	}
 }
 

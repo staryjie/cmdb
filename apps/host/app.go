@@ -11,6 +11,7 @@ import (
 	pb_request "github.com/infraboard/mcube/pb/request"
 	resource "github.com/staryjie/cmdb/apps/resource"
 	"github.com/staryjie/cmdb/utils"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -122,6 +123,10 @@ func (s *HostSet) ResourceIds() (ids []string) {
 		ids = append(ids, s.Items[i].Base.Id)
 	}
 	return
+}
+
+func (s *HostSet) Clone() *HostSet {
+	return proto.Clone(s).(*HostSet)
 }
 
 func (s *HostSet) UpdateTag(tags []*resource.Tag) {
