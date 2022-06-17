@@ -7,7 +7,12 @@ import (
 	"time"
 
 	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
+)
+
+const (
+	CIPHER_TEXT_PREFIX = "@ciphered@"
 )
 
 var (

@@ -5,4 +5,5 @@ import (
 	_ "github.com/staryjie/cmdb/apps/book/impl"
 	_ "github.com/staryjie/cmdb/apps/host/impl"
 	_ "github.com/staryjie/cmdb/apps/resource/impl"
+	_ "github.com/staryjie/cmdb/apps/secret/impl"
 )
