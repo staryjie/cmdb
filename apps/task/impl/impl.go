@@ -40,7 +40,8 @@ func (s *service) Config() error {
 
 	s.log = zap.L().Named(s.Name())
 	s.db = db
-	s.secret = app.GetGrpcApp(secret.AppName).(secret.ServiceServer)
+	s.secret = &secretMock{} // 通过Mock对象来解耦依赖
+	// s.secret = app.GetGrpcApp(secret.AppName).(secret.ServiceServer)
 	s.host = app.GetGrpcApp(host.AppName).(host.ServiceServer)
 
 	return nil
