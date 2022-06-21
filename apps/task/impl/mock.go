@@ -20,10 +20,10 @@ func (m *secretMock) QuerySecret(context.Context, *secret.QuerySecretRequest) (*
 
 func (m *secretMock) DescribeSecret(context.Context, *secret.DescribeSecretRequest) (
 	*secret.Secret, error) {
-	sct := secret.NewDefaultSecret()
-	sct.Data.ApiKey = ""
-	sct.Data.ApiSecret = ""
-	return sct, nil
+	ins := secret.NewDefaultSecret()
+	ins.Data.ApiKey = ""
+	ins.Data.ApiSecret = ""
+	return ins, nil
 }
 
 func (m *secretMock) DeleteSecret(context.Context, *secret.DeleteSecretRequest) (*secret.Secret, error) {

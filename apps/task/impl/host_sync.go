@@ -4,24 +4,23 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/staryjie/cmdb/provider/tencent/connectivity"
-	"github.com/staryjie/cmdb/provider/tencent/cvm"
-
 	"github.com/staryjie/cmdb/apps/host"
 	"github.com/staryjie/cmdb/apps/secret"
 	"github.com/staryjie/cmdb/apps/task"
+	"github.com/staryjie/cmdb/provider/tencent/connectivity"
+	"github.com/staryjie/cmdb/provider/tencent/cvm"
 )
-
-type syncHostReqeust struct {
-	secret *secret.Secret
-	task   *task.Task
-}
 
 func newSyncHostRequest(secret *secret.Secret, task *task.Task) *syncHostReqeust {
 	return &syncHostReqeust{
 		secret: secret,
 		task:   task,
 	}
+}
+
+type syncHostReqeust struct {
+	secret *secret.Secret
+	task   *task.Task
 }
 
 func (s *service) syncHost(ctx context.Context, req *syncHostReqeust) {

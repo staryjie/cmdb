@@ -14,42 +14,62 @@ import (
 	"github.com/staryjie/cmdb/conf"
 )
 
-// 创建Task
-func (s *service) CreateTask(ctx context.Context, req *task.CreateTaskRequst) (
-	*task.Task, error) {
-	// 创建task实例
+// 创建任务的业务逻辑
+func (s *service) CreateTask(ctx context.Context, req *task.CreateTaskRequst) (*task.Task, error) {
+	// 创建Task实例
 	t, err := task.CreateTask(req)
 	if err != nil {
 		return nil, err
 	}
 
-	// 1.查询secret
+	// 1. 查询secret
 	sct, err := s.secret.DescribeSecret(ctx, secret.NewDescribeSecretRequest(req.SecretId))
 	if err != nil {
 		return nil, err
 	}
 	t.SecretDescription = sct.Data.Description
 
-	// 解密API secret
+	// 并解密api sercret
 	if err := sct.Data.DecryptAPISecret(conf.C().App.EncryptKey); err != nil {
 		return nil, err
 	}
 
-	// 启动task，修改task的状态
+	// 需要把Task 标记为Running, 修改一下Task对象的状态
 	t.Run()
 
 	var taskCancel context.CancelFunc
 	switch req.Type {
-	// 资源同步
 	case task.Type_RESOURCE_SYNC:
-		// 根据secret所属的厂商，初始化对应厂商的operator
+		// 根据secret所属的厂商, 初始化对应厂商的operator
 		switch sct.Data.Vendor {
-		// 腾讯云
 		case resource.Vendor_TENCENT:
-			// 操作哪种资源
+			// 操作那种资源:
 			switch req.ResourceType {
-			// 同步主机数据
 			case resource.Type_HOST:
+				// // 只实现主机同步, 初始化腾讯cvm operator
+				// // NewTencentCloudClient client
+				// txConn := connectivity.NewTencentCloudClient(s.Data.ApiKey, s.Data.ApiSecret, req.Region)
+				// cvmOp := cvm.NewCVMOperator(txConn.CvmClient())
+
+				// // 因为要同步所有资源，需要分页查询
+				// pagger := cvm.NewPagger(float64(s.Data.RequestRate), cvmOp)
+				// for pagger.Next() {
+				// 	set := host.NewHostSet()
+				// 	// 查询分页有错误立即返回
+				// 	if err := pagger.Scan(ctx, set); err != nil {
+				// 		return nil, err
+				// 	}
+				// 	// 保持该页数据, 同步时间时, 记录下日志
+				// 	for index := range set.Items {
+				// 		_, err := i.host.SyncHost(ctx, set.Items[index])
+				// 		if err != nil {
+				// 			i.log.Errorf("sync host error, %s", err)
+				// 			continue
+				// 		}
+				// 	}
+				// }
+				// 直接使用goroutine 把最耗时的逻辑
+				// ctx 是不是传递Http 的ctx
 				taskExecCtx, cancel := context.WithTimeout(
 					context.Background(),
 					time.Duration(req.Timeout)*time.Second,
@@ -60,29 +80,28 @@ func (s *service) CreateTask(ctx context.Context, req *task.CreateTaskRequst) (
 			case resource.Type_RDS:
 			case resource.Type_BILL:
 			}
-		// 阿里云
 		case resource.Vendor_ALIYUN:
-		// 华为云
+
 		case resource.Vendor_HUAWEI:
-		// 亚马逊
+
 		case resource.Vendor_AMAZON:
-		// vsphere虚拟机
+
 		case resource.Vendor_VSPHERE:
 		default:
-			return nil, fmt.Errorf("Unknow resource type: %s", sct.Data.Vendor)
+			return nil, fmt.Errorf("unknow resource type: %s", sct.Data.Vendor)
 		}
 
 		// 2. 利用secret的信息, 初始化一个operater
 		// 使用operator进行资源的操作, 比如同步
 
 		// 调用host service 把数据入库
-	// 资源释放
 	case task.Type_RESOURCE_RELEASE:
 	default:
 		return nil, fmt.Errorf("unknow task type: %s", req.Type)
 	}
 
-	// 将数据保存到数据库
+	// 需要保存到数据库
+
 	if err := s.insert(ctx, t); err != nil {
 		if taskCancel != nil {
 			taskCancel()
@@ -93,10 +112,10 @@ func (s *service) CreateTask(ctx context.Context, req *task.CreateTaskRequst) (
 	return t, nil
 }
 
-func (s *service) QueryTask(ctx context.Context, req *task.QueryTaskRequest) (*task.TaskSet, error) {
+func (s *service) QueryTask(context.Context, *task.QueryTaskRequest) (*task.TaskSet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryTask not implemented")
 }
 
-func (s *service) DescribeTask(ctx context.Context, req *task.DescribeTaskRequest) (*task.Task, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DescribeTask not implemented")
+func (s *service) DescribeTask(context.Context, *task.DescribeTaskRequest) (*task.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTask not implemented")
 }

@@ -15,23 +15,16 @@ var (
 	validate = validator.New()
 )
 
-func NewDefaultTask() *Task {
-	return &Task{
-		Data:   &CreateTaskRequst{},
-		Status: &Status{},
-	}
-}
-
-func (req *CreateTaskRequst) Validate() error {
-	return validate.Struct(req)
-}
-
 func NewCreateTaskRequst() *CreateTaskRequst {
 	return &CreateTaskRequst{
 		Params: map[string]string{},
 		// 默认半小时的超市时间
 		Timeout: 30 * 60,
 	}
+}
+
+func (req *CreateTaskRequst) Validate() error {
+	return validate.Struct(req)
 }
 
 func CreateTask(req *CreateTaskRequst) (*Task, error) {
@@ -44,6 +37,13 @@ func CreateTask(req *CreateTaskRequst) (*Task, error) {
 	ins.Id = xid.New().String()
 
 	return ins, nil
+}
+
+func NewDefaultTask() *Task {
+	return &Task{
+		Data:   &CreateTaskRequst{},
+		Status: &Status{},
+	}
 }
 
 func (s *Task) Run() {

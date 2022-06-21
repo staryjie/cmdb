@@ -33,7 +33,7 @@ func TestCreateSecret(t *testing.T) {
 }
 
 func TestDescribeSecret(t *testing.T) {
-	ss, err := sct.DescribeSecret(context.Background(), secret.NewDescribeSecretRequest("cam48hi6i3s3el6tt270"))
+	ss, err := sct.DescribeSecret(context.Background(), secret.NewDescribeSecretRequest("cao3o6a6i3s183h60r8g"))
 	if err != nil {
 		t.Fatal(err)
 	}

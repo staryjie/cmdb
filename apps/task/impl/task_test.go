@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	tsk task.ServiceServer
+	ins task.ServiceServer
 )
 
 func TestCreateTask(t *testing.T) {
@@ -25,8 +25,8 @@ func TestCreateTask(t *testing.T) {
 	req.Type = task.Type_RESOURCE_SYNC
 	req.Region = os.Getenv("TX_CLOUD_REGION")
 	req.ResourceType = resource.Type_HOST
-	req.SecretId = "cam48hi6i3s3el6tt270"
-	taskIns, err := tsk.CreateTask(context.Background(), req)
+	req.SecretId = os.Getenv("SECRET_ID")
+	taskIns, err := ins.CreateTask(context.Background(), req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,5 +47,5 @@ func init() {
 		panic(err)
 	}
 
-	tsk = app.GetGrpcApp(task.AppName).(task.ServiceServer)
+	ins = app.GetGrpcApp(task.AppName).(task.ServiceServer)
 }

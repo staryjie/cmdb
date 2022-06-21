@@ -6,4 +6,5 @@ import (
 	_ "github.com/staryjie/cmdb/apps/host/impl"
 	_ "github.com/staryjie/cmdb/apps/resource/impl"
 	_ "github.com/staryjie/cmdb/apps/secret/impl"
+	_ "github.com/staryjie/cmdb/apps/task/impl"
 )
