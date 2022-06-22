@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/infraboard/mcube/flowcontrol/tokenbucket"
 	request "github.com/infraboard/mcube/http/request"
 	pb_request "github.com/infraboard/mcube/pb/request"
 	resource "github.com/staryjie/cmdb/apps/resource"
@@ -167,4 +168,79 @@ type Pagger interface {
 	Next() bool
 	SetPageSize(ps int64)
 	Scan(context.Context, *HostSet) error
+}
+
+type Set interface {
+	// 往set中添加任何类型的元素
+	Add(any)
+	// 当前集合中有多少个元素
+	Length() int64
+}
+
+type PaggerV2 interface {
+	Next() bool
+	Offset() int64
+	SetPageSize(ps int64)
+	PageSize() int64
+	PageNumber() int64
+	SetRate(r float64)
+	Scan(context.Context, Set) error
+}
+
+// 利用面向对象的继承，实现一个模板，把除了Scan()之外的其他方法都实现
+
+type BasePaggerV2 struct {
+	// 令牌桶
+	hasNext bool
+	tb      *tokenbucket.Bucket
+
+	// 控制分页的核心参数
+	pageNumber int64
+	pageSize   int64
+}
+
+func NewBasePaggerV2() *BasePaggerV2 {
+	return &BasePaggerV2{
+		hasNext:    true,
+		tb:         tokenbucket.NewBucketWithRate(1, 1),
+		pageNumber: 1,
+		pageSize:   20,
+	}
+}
+
+func (p *BasePaggerV2) Next() bool {
+	// 等待分配令牌
+	p.tb.Wait(1)
+
+	return p.hasNext
+}
+
+func (p *BasePaggerV2) Offset() int64 {
+	return (p.pageNumber - 1) * p.pageSize
+}
+
+func (p *BasePaggerV2) SetPageSize(ps int64) {
+	p.pageSize = ps
+}
+
+func (p *BasePaggerV2) PageSize() int64 {
+	return p.pageSize
+}
+
+func (p *BasePaggerV2) PageNumber() int64 {
+	return p.pageNumber
+}
+
+func (p *BasePaggerV2) SetRate(r float64) {
+	p.tb.SetRate(r)
+}
+
+func (p *BasePaggerV2) CheckHasNext(current int64) {
+	// 可以根据当前一页是满页来决定是否有下一页
+	if current < p.pageSize {
+		p.hasNext = false
+	} else {
+		// 直接调整指针指向下一页
+		p.pageNumber++
+	}
 }

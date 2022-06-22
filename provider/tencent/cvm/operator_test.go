@@ -44,6 +44,18 @@ func TestPaggerQuery(t *testing.T) {
 	}
 }
 
+func TestPaggerV2Query(t *testing.T) {
+	p := cvm.NewPaggerV2(op)
+	// set := host.NewHostSet()
+	for p.Next() {
+		set := host.NewHostSet()
+		if err := p.Scan(context.Background(), set); err != nil {
+			panic(err)
+		}
+		t.Logf("Pagger Query Result: %v", set)
+	}
+}
+
 func init() {
 	// 初始化cvm客户端
 	err := connectivity.LoadClientFromEnv()

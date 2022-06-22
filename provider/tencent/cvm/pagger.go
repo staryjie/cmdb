@@ -54,6 +54,11 @@ func (p *pagger) nextReq() *cvm.DescribeInstancesRequest {
 	return p.req
 }
 
+// 设置速率限制
+func (p *pagger) SetRate(r float64) {
+	p.tb.SetRate(r)
+}
+
 // 设置pageSize
 func (p *pagger) SetPageSize(ps int64) {
 	p.pageSize = ps
@@ -73,10 +78,10 @@ func (p *pagger) Scan(ctx context.Context, set *host.HostSet) error {
 	}
 
 	// 查询的数据赋值给set
-	*set = *hs.Clone()
-	// for i := range hs.Items {
-	// 	set.Add(set.Items[i])
-	// }
+	// *set = *hs.Clone()
+	for i := range hs.Items {
+		set.Add(set.Items[i])
+	}
 
 	// 获取当前页没有数据，则没有下一页
 	// 还可以根据当前页数据是否小于pageSize，如果小于pageSize，则没有下一页
